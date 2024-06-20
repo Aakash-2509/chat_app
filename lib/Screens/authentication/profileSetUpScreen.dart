@@ -1,11 +1,13 @@
+import 'dart:developer';
 import 'dart:io';
 
-import 'package:chat_app/Screens/chatlist/BottomNavigation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:chat_app/Screens/chatlist/BottomNavigation.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
   final User user;
@@ -22,6 +24,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   final ImagePicker _picker = ImagePicker();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
@@ -40,17 +43,20 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     return await storageReference.getDownloadURL();
   }
 
-  void _saveProfile() async {
+  Future<void> _saveProfile() async {
     try {
       String? profileImageUrl;
       if (_profileImage != null) {
         profileImageUrl = await _uploadImage(_profileImage!);
       }
 
+      // Get current FCM token or generate a new one if none exists
+      String? fcmToken = await FirebaseMessaging.instance.getToken();
       await _firestore.collection('users').doc(widget.user.uid).update({
         'name': _nameController.text.trim(),
         'phone': _phoneController.text.trim(),
         'profileImageUrl': profileImageUrl ?? '',
+        'fcmToken': fcmToken,
       });
 
       // Navigate to the home screen or another appropriate screen

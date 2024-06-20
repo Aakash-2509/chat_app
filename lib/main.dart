@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:chat_app/Screens/authentication/SignUpScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -12,6 +15,14 @@ void main() async {
   Hive.init(appDocumentDir.path);
   // Continue with Hive initialization and other setup
   await Hive.openBox('user_data');
+  String? fcmToken = await FirebaseMessaging.instance.getToken();
+
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
   runApp(const MyApp());
 }
 
