@@ -2,7 +2,6 @@ import 'package:chat_app/Screens/chatlist/HomePage.dart';
 import 'package:chat_app/Screens/chatlist/profileScreen.dart';
 import 'package:flutter/material.dart';
 
-
 class BottomNavigation extends StatefulWidget {
   const BottomNavigation({super.key});
 
@@ -28,6 +27,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.purple[100],
         title: const Text('Setoo Chat App'),
       ),
       body: _children[_currentIndex],

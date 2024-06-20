@@ -6,26 +6,32 @@ class APIs {
   static FirebaseAuth auth = FirebaseAuth.instance;
   static FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  static User get user => auth.currentUser!;
+  // static User get user => auth.currentUser!;
 
   // static Future<bool> userExists() async {
   //   return (await firestore.collection('user').doc(auth.currentUser!.uid).get())
   //       .exists;
   // }
 
-  static Future<void> createUser() async {
-    final chatUser = chatuser(
-        // image: user.photoURL.toString(),
-        name: user.displayName.toString(),
-        // about: "happy ",
-        // isOnline: false,
-        // id: user.uid,
-        // pushToken: "",
-        email: user.email.toString());
 
-    // return await firestore
-    //     .collection('user')
-    //     .doc(user.uid)
-    //     .set(chatUser.toJson());
-  }
+//   static Stream<QuerySnapshot<Map<String, dynamic>>> getallMessages() {
+// return firestore.collection('messages').where('id',isNotEqualTo: ).snapshots();
+
+//   }
+
+  // static Future<void> createUser() async {
+  //   final chatUser = chatuser(
+  //       // image: user.photoURL.toString(),
+  //       name: user.displayName.toString(),
+  //       // about: "happy ",
+  //       // isOnline: false,
+  //       // id: user.uid,
+  //       // pushToken: "",
+  //       email: user.email.toString());
+
+  //   // return await firestore
+  //   //     .collection('user')
+  //   //     .doc(user.uid)
+  //   //     .set(chatUser.toJson());
+  // }
 }
