@@ -146,32 +146,60 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
+  // void _handleEmailSignUp() async {
+  //   try {
+  //     UserCredential userCredential =
+  //         await _auth.createUserWithEmailAndPassword(
+  //       email: _emailController.text.trim(),
+  //       password: _passwordController.text.trim(),
+  //     );
+  //     _user = userCredential.user;
+
+  //     // Store user details in Firestore
+  //     await _firestore.collection('users').doc(_user!.uid).set({
+  //       'uid': _user!.uid,
+  //       'email': _user!.email,
+  //       'name': _nameController.text.trim(),
+  //     });
+
+  //     setState(() {
+  //       _user = userCredential.user;
+  //     });
+  //   } catch (e) {
+  //     log("Error: $e");
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text("Error: $e")),
+  //     );
+  //   }
+  // }
+
   void _handleEmailSignUp() async {
-    try {
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+  try {
+    UserCredential userCredential =
+        await _auth.createUserWithEmailAndPassword(
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+    );
+    _user = userCredential.user;
+
+    // Store user details in Firestore
+    await _firestore.collection('users').doc(_user!.uid).set({
+      'uid': _user!.uid,
+      'email': _user!.email,
+      'name': _nameController.text.trim(),
+    });
+
+    setState(() {
       _user = userCredential.user;
-
-      // Store user details in Firestore
-      await _firestore.collection('users').doc(_user!.uid).set({
-        'uid': _user!.uid,
-        'email': _user!.email,
-        'name': _nameController.text.trim(),
-      });
-
-      setState(() {
-        _user = userCredential.user;
-      });
-    } catch (e) {
-      log("Error: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
-      );
-    }
+    });
+  } catch (e) {
+    log("Error: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Error: $e")),
+    );
   }
+}
+
 
   void _handleEmailLogin() async {
     try {
@@ -190,30 +218,58 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
-  void _handleGoogleSignIn() async {
-    try {
-      GoogleAuthProvider googleProvider = GoogleAuthProvider();
-      UserCredential userCredential =
-          await _auth.signInWithProvider(googleProvider);
-      _user = userCredential.user;
+  // void _handleGoogleSignIn() async {
+  //   try {
+  //     GoogleAuthProvider googleProvider = GoogleAuthProvider();
+  //     UserCredential userCredential =
+  //         await _auth.signInWithProvider(googleProvider);
+  //     _user = userCredential.user;
 
-      // Store user details in Firestore if it's a new user
-      if (userCredential.additionalUserInfo!.isNewUser) {
-        await _firestore.collection('users').doc(_user!.uid).set({
-          'uid': _user!.uid,
-          'email': _user!.email,
-          'name': _user!.displayName,
-        });
-      }
+  //     // Store user details in Firestore if it's a new user
+  //     if (userCredential.additionalUserInfo!.isNewUser) {
+  //       await _firestore.collection('users').doc(_user!.uid).set({
+  //         'uid': _user!.uid,
+  //         'email': _user!.email,
+  //         'name': _user!.displayName,
+  //       });
+  //     }
 
-      setState(() {
-        _user = userCredential.user;
+  //     setState(() {
+  //       _user = userCredential.user;
+  //     });
+  //   } catch (e) {
+  //     log("Error: $e");
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text("Error: $e")),
+  //     );
+  //   }
+  // }
+
+void _handleGoogleSignIn() async {
+  try {
+    GoogleAuthProvider googleProvider = GoogleAuthProvider();
+    UserCredential userCredential = await _auth.signInWithProvider(googleProvider);
+    _user = userCredential.user;
+
+    // Store user details in Firestore if it's a new user
+    if (userCredential.additionalUserInfo!.isNewUser) {
+      await _firestore.collection('users').doc(_user!.uid).set({
+        'uid': _user!.uid,
+        'email': _user!.email,
+        'name': _user!.displayName,
       });
-    } catch (e) {
-      log("Error: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
-      );
     }
+
+    setState(() {
+      _user = userCredential.user;
+    });
+  } catch (e) {
+    log("Error: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Error: $e")),
+    );
   }
+}
+
+
 }
