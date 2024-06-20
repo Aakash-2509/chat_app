@@ -1,10 +1,10 @@
-import 'dart:convert';
-import 'dart:developer';
-import 'package:chat_app/Screens/chatlist/chatScreen.dart';
-import 'package:chat_app/model/chatlist.dart';
-import 'package:chat_app/repo/apis.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+// import 'dart:convert';
+// import 'dart:developer';
+// import 'package:chat_app/Screens/chatlist/chatScreen.dart';
+// import 'package:chat_app/model/chatlist.dart';
+// import 'package:chat_app/repo/apis.dart';
+// import 'package:flutter/cupertino.dart';
+// import 'package:flutter/material.dart';
 
 // class HomeTab extends StatefulWidget {
 //   const HomeTab({super.key});
@@ -22,7 +22,6 @@ import 'package:flutter/material.dart';
 //   Widget build(BuildContext context) {
 //     return Scaffold(
 //       appBar: AppBar(
-//         // leading: Icon(Icons.search),
 //         title: Padding(
 //           padding: const EdgeInsets.all(15.0),
 //           child: TextField(
@@ -65,8 +64,8 @@ import 'package:flutter/material.dart';
 //                     children: <Widget>[
 //                       ListTile(
 //                         leading: CircleAvatar(
-//                           backgroundImage: NetworkImage(
-//                               "https://images.pexels.com/photos/736230/pexels-photo-736230.jpeg?cs=srgb&dl=pexels-jonaskakaroto-736230.jpg&fm=jpg"),
+//                           backgroundImage:
+//                               NetworkImage(filteredList[index].profileImageUrl),
 //                           radius: 25.0,
 //                         ),
 //                         title: Row(
@@ -95,7 +94,7 @@ import 'package:flutter/material.dart';
 //                                 name: filteredList[index].name,
 //                                 email: filteredList[index].email,
 //                                 profileImageUrl:
-//                                     "https://images.pexels.com/photos/736230/pexels-photo-736230.jpeg?cs=srgb&dl=pexels-jonaskakaroto-736230.jpg&fm=jpg",
+//                                     filteredList[index].profileImageUrl,
 //                               ),
 //                             ),
 //                           );
@@ -113,6 +112,16 @@ import 'package:flutter/material.dart';
 //   }
 // }
 
+
+import 'dart:convert';
+import 'dart:developer';
+import 'package:chat_app/Screens/chatlist/chatScreen.dart';
+import 'package:chat_app/model/chatlist.dart';
+import 'package:chat_app/repo/apis.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
 
@@ -127,6 +136,8 @@ class _HomeTabState extends State<HomeTab> {
 
   @override
   Widget build(BuildContext context) {
+    final User? user = APIs.auth.currentUser; // Get the logged-in user
+
     return Scaffold(
       appBar: AppBar(
         title: Padding(
@@ -163,6 +174,8 @@ class _HomeTabState extends State<HomeTab> {
               final data = snapshot.data?.docs;
               list =
                   data?.map((e) => chatuser.fromJson(e.data())).toList() ?? [];
+              // Exclude the logged-in user from the list
+              list.removeWhere((element) => element.email == user?.email);
               filteredList = searchQuery.isEmpty ? list : filteredList;
               return ListView.builder(
                 itemCount: filteredList.length,
