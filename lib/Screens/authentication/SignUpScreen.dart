@@ -209,7 +209,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       // Navigate to the profile setup screen if the user is new
       if (userCredential.additionalUserInfo!.isNewUser) {
-        Navigator.of(context).pushReplacement(
+        Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => ProfileSetupScreen(user: _user!),
           ),

@@ -26,6 +26,8 @@ class _ProfileTabState extends State<ProfileTab> {
   String? _photoUrl;
   Box? _imageBox;
 
+  bool _isLoading = false; // Flag to track loading state
+
   @override
   void initState() {
     super.initState();
@@ -52,6 +54,9 @@ class _ProfileTabState extends State<ProfileTab> {
   }
 
   Future<void> _fetchUserData() async {
+    setState(() {
+      _isLoading = true; // Set loading state to true
+    });
     if (_user != null) {
       DocumentSnapshot userDoc =
           await _firestore.collection('users').doc(_user!.uid).get();
@@ -62,6 +67,11 @@ class _ProfileTabState extends State<ProfileTab> {
           _photoUrl = userDoc.get('profileImageUrl');
           _loadImageLocally();
         });
+        // Store data in Hive
+        var userBox = Hive.box('user_data');
+        userBox.put('fullName', _fullName);
+        userBox.put('phoneNumber', _phoneNumber);
+        userBox.put('photoUrl', _photoUrl);
       } else {
         setState(() {
           _fullName = 'No name';
@@ -70,6 +80,10 @@ class _ProfileTabState extends State<ProfileTab> {
         });
       }
     }
+    setState(() {
+      _isLoading =
+          false; // Set loading state to false after data fetch completes
+    });
   }
 
   Future<void> _loadImageLocally() async {
@@ -133,38 +147,62 @@ class _ProfileTabState extends State<ProfileTab> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 16),
-              GestureDetector(
-                onTap: _pickAndUploadImage,
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundImage: _photoUrl != null
-                      ? NetworkImage(_photoUrl!)
-                      : const AssetImage('assets/default_images/trainer.png')
-                          as ImageProvider,
-                  child: _photoUrl == null
-                      ? const Icon(Icons.add_a_photo, size: 50)
-                      : null,
-                ),
+              Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundImage: _photoUrl != null
+                        ? NetworkImage(_photoUrl!)
+                        : null, // If _photoUrl is null, set backgroundImage to null
+                    child: _photoUrl == null
+                        ? const Icon(Icons.add_a_photo, size: 50)
+                        : null,
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      height: 25,
+                      width: 25,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: IconButton(
+                        iconSize: 11,
+                        icon: const Icon(Icons.edit),
+                        onPressed: _pickAndUploadImage,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
-              Text(
-                _fullName ?? 'Loading...',
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                _user?.email ?? 'No email',
-                style: const TextStyle(fontSize: 16, color: Colors.grey),
-              ),
-              const SizedBox(height: 16),
-              ListTile(
-                leading: const Icon(Icons.phone),
-                title: Text(
-                  _phoneNumber ?? 'No phone number',
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ),
+              _isLoading
+                  ? const CircularProgressIndicator() // Show loading indicator while fetching data
+                  : Column(
+                      children: [
+                        Text(
+                          _fullName ?? 'Loading...',
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          _user?.email ?? 'No email',
+                          style:
+                              const TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                        const SizedBox(height: 16),
+                        ListTile(
+                          leading: const Icon(Icons.phone),
+                          title: Text(
+                            _phoneNumber ?? 'No phone number',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ],
+                    ),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () async {

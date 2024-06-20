@@ -7,10 +7,11 @@ import 'package:path_provider/path_provider.dart' as path_provider;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
+  await Firebase.initializeApp(); // Initialize Firebase
   final appDocumentDir = await path_provider.getApplicationDocumentsDirectory();
   Hive.init(appDocumentDir.path);
-  await Firebase.initializeApp();
+  // Continue with Hive initialization and other setup
+  await Hive.openBox('user_data');
   runApp(const MyApp());
 }
 
