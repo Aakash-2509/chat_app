@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../chatlist/BottomNavigation.dart';
+import 'ProfileSetupScreen.dart'; // Import the new screen
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -21,7 +22,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
 
   @override
   void initState() {
@@ -52,14 +52,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          TextField(
-            controller: _nameController,
-            decoration: const InputDecoration(
-              labelText: "Name",
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 16),
           TextField(
             controller: _emailController,
             decoration: const InputDecoration(
@@ -146,60 +138,38 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  // void _handleEmailSignUp() async {
-  //   try {
-  //     UserCredential userCredential =
-  //         await _auth.createUserWithEmailAndPassword(
-  //       email: _emailController.text.trim(),
-  //       password: _passwordController.text.trim(),
-  //     );
-  //     _user = userCredential.user;
-
-  //     // Store user details in Firestore
-  //     await _firestore.collection('users').doc(_user!.uid).set({
-  //       'uid': _user!.uid,
-  //       'email': _user!.email,
-  //       'name': _nameController.text.trim(),
-  //     });
-
-  //     setState(() {
-  //       _user = userCredential.user;
-  //     });
-  //   } catch (e) {
-  //     log("Error: $e");
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text("Error: $e")),
-  //     );
-  //   }
-  // }
-
   void _handleEmailSignUp() async {
-  try {
-    UserCredential userCredential =
-        await _auth.createUserWithEmailAndPassword(
-      email: _emailController.text.trim(),
-      password: _passwordController.text.trim(),
-    );
-    _user = userCredential.user;
-
-    // Store user details in Firestore
-    await _firestore.collection('users').doc(_user!.uid).set({
-      'uid': _user!.uid,
-      'email': _user!.email,
-      'name': _nameController.text.trim(),
-    });
-
-    setState(() {
+    try {
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
       _user = userCredential.user;
-    });
-  } catch (e) {
-    log("Error: $e");
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Error: $e")),
-    );
-  }
-}
 
+      // Store basic user details in Firestore
+      await _firestore.collection('users').doc(_user!.uid).set({
+        'uid': _user!.uid,
+        'email': _user!.email,
+      });
+
+      setState(() {
+        _user = userCredential.user;
+      });
+
+      // Navigate to the profile setup screen
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => ProfileSetupScreen(user: _user!),
+        ),
+      );
+    } catch (e) {
+      log("Error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
+    }
+  }
 
   void _handleEmailLogin() async {
     try {
@@ -218,58 +188,42 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
-  // void _handleGoogleSignIn() async {
-  //   try {
-  //     GoogleAuthProvider googleProvider = GoogleAuthProvider();
-  //     UserCredential userCredential =
-  //         await _auth.signInWithProvider(googleProvider);
-  //     _user = userCredential.user;
-
-  //     // Store user details in Firestore if it's a new user
-  //     if (userCredential.additionalUserInfo!.isNewUser) {
-  //       await _firestore.collection('users').doc(_user!.uid).set({
-  //         'uid': _user!.uid,
-  //         'email': _user!.email,
-  //         'name': _user!.displayName,
-  //       });
-  //     }
-
-  //     setState(() {
-  //       _user = userCredential.user;
-  //     });
-  //   } catch (e) {
-  //     log("Error: $e");
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text("Error: $e")),
-  //     );
-  //   }
-  // }
-
-void _handleGoogleSignIn() async {
-  try {
-    GoogleAuthProvider googleProvider = GoogleAuthProvider();
-    UserCredential userCredential = await _auth.signInWithProvider(googleProvider);
-    _user = userCredential.user;
-
-    // Store user details in Firestore if it's a new user
-    if (userCredential.additionalUserInfo!.isNewUser) {
-      await _firestore.collection('users').doc(_user!.uid).set({
-        'uid': _user!.uid,
-        'email': _user!.email,
-        'name': _user!.displayName,
-      });
-    }
-
-    setState(() {
+  void _handleGoogleSignIn() async {
+    try {
+      GoogleAuthProvider googleProvider = GoogleAuthProvider();
+      UserCredential userCredential =
+          await _auth.signInWithProvider(googleProvider);
       _user = userCredential.user;
-    });
-  } catch (e) {
-    log("Error: $e");
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Error: $e")),
-    );
+
+      // Store user details in Firestore if it's a new user
+      if (userCredential.additionalUserInfo!.isNewUser) {
+        await _firestore.collection('users').doc(_user!.uid).set({
+          'uid': _user!.uid,
+          'email': _user!.email,
+        });
+      }
+
+      setState(() {
+        _user = userCredential.user;
+      });
+
+      // Navigate to the profile setup screen if the user is new
+      if (userCredential.additionalUserInfo!.isNewUser) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => ProfileSetupScreen(user: _user!),
+          ),
+        );
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const BottomNavigation()),
+        );
+      }
+    } catch (e) {
+      log("Error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
+    }
   }
-}
-
-
 }

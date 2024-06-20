@@ -1,103 +1,116 @@
-// import 'dart:io';
-// import 'package:flutter/material.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:firebase_storage/firebase_storage.dart';
-// import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
-// class ProfileSetupScreen extends StatefulWidget {
-//   const ProfileSetupScreen({super.key});
+import 'package:chat_app/Screens/chatlist/BottomNavigation.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
-//   @override
-//   _ProfileSetupScreenState createState() => _ProfileSetupScreenState();
-// }
+class ProfileSetupScreen extends StatefulWidget {
+  final User user;
+  const ProfileSetupScreen({super.key, required this.user});
 
-// class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
-//   final TextEditingController _nameController = TextEditingController();
-//   final TextEditingController _phoneController = TextEditingController();
-//   File? _image;
+  @override
+  State<ProfileSetupScreen> createState() => _ProfileSetupScreenState();
+}
 
-//   final FirebaseAuth _auth = FirebaseAuth.instance;
-//   final FirebaseStorage _storage = FirebaseStorage.instance;
-//   final ImagePicker _picker = ImagePicker();
+class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  File? _profileImage;
+  final ImagePicker _picker = ImagePicker();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
-//   Future<void> _pickImage() async {
-//     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-//     if (image != null) {
-//       setState(() {
-//         _image = File(image.path);
-//       });
-//     }
-//   }
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      if (pickedFile != null) {
+        _profileImage = File(pickedFile.path);
+      }
+    });
+  }
 
-//   Future<void> _saveProfile() async {
-//     try {
-//       User? user = _auth.currentUser;
-//       String? imageUrl;
+  Future<String> _uploadImage(File image) async {
+    Reference storageReference = _storage.ref().child(
+        'profile_images/${widget.user.uid}/${DateTime.now().millisecondsSinceEpoch}');
+    UploadTask uploadTask = storageReference.putFile(image);
+    await uploadTask.whenComplete(() => null);
+    return await storageReference.getDownloadURL();
+  }
 
-//       if (_image != null) {
-//         final storageRef = _storage.ref().child('user_photos/${user!.uid}.jpg');
-//         await storageRef.putFile(_image!);
-//         imageUrl = await storageRef.getDownloadURL();
-//       }
+  void _saveProfile() async {
+    try {
+      String? profileImageUrl;
+      if (_profileImage != null) {
+        profileImageUrl = await _uploadImage(_profileImage!);
+      }
 
-//       await user!.updateDisplayName(_nameController.text);
-//       await user.updatePhotoURL(imageUrl);
-//       await user.updatePhoneNumber(_phoneController.text);
+      await _firestore.collection('users').doc(widget.user.uid).update({
+        'name': _nameController.text.trim(),
+        'phone': _phoneController.text.trim(),
+        'profileImageUrl': profileImageUrl ?? '',
+      });
 
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(content: Text("Profile updated successfully")),
-//       );
+      // Navigate to the home screen or another appropriate screen
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const BottomNavigation()),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
+    }
+  }
 
-//       // Navigate to another screen or main app screen
-//       Navigator.of(context).pop();
-//     } catch (e) {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(content: Text("Error: $e")),
-//       );
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text("Setup Profile"),
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             TextField(
-//               controller: _nameController,
-//               decoration: const InputDecoration(
-//                 labelText: "Name",
-//                 border: OutlineInputBorder(),
-//               ),
-//             ),
-//             const SizedBox(height: 16),
-//             TextField(
-//               controller: _phoneController,
-//               decoration: const InputDecoration(
-//                 labelText: "Phone Number",
-//                 border: OutlineInputBorder(),
-//               ),
-//             ),
-//             const SizedBox(height: 16),
-//             _image != null
-//                 ? Image.file(_image!)
-//                 : IconButton(
-//                     icon: const Icon(Icons.add_a_photo),
-//                     onPressed: _pickImage,
-//                   ),
-//             const SizedBox(height: 16),
-//             ElevatedButton(
-//               onPressed: _saveProfile,
-//               child: const Text("Save Profile"),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Set up your profile"),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: _pickImage,
+              child: CircleAvatar(
+                radius: 50,
+                backgroundImage:
+                    _profileImage != null ? FileImage(_profileImage!) : null,
+                child: _profileImage == null
+                    ? const Icon(Icons.add_a_photo, size: 50)
+                    : null,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(
+                labelText: "Name",
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _phoneController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: "Phone Number",
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _saveProfile,
+              child: const Text("Save Profile"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
