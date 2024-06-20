@@ -170,7 +170,7 @@ class _ProfileTabState extends State<ProfileTab> {
                       ),
                       child: IconButton(
                         iconSize: 11,
-                        icon: const Icon(Icons.edit),
+                        icon: const Icon(Icons.mode_edit_outline_outlined),
                         onPressed: _pickAndUploadImage,
                       ),
                     ),
