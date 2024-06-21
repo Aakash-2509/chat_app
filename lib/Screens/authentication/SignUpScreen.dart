@@ -9,7 +9,7 @@
 // import 'ProfileSetupScreen.dart'; // Import the new screen
 
 // class SignUpScreen extends StatefulWidget {
-  
+
 //   const SignUpScreen({super.key});
 
 //   @override
@@ -181,7 +181,7 @@
 //             userModel: newuser ,
 //             firebaseUser: userCredential.user!,
 //             user: _user!,
-            
+
 //           ),
 //         ),
 //       );
@@ -260,7 +260,7 @@
 //             userModel: newuser ,
 //             firebaseUser: userCredential.user!,
 //             user: _user!,
-            
+
 //           ),
 //         ),
 //         );
@@ -286,6 +286,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../main.dart';
 import '../chatlist/BottomNavigation.dart';
 import 'ProfileSetupScreen.dart'; // Import the new screen
 
@@ -308,6 +309,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   void initState() {
     super.initState();
+    requestNotificationPermissions();
+    configureFirebaseMessaging();
     _auth.authStateChanges().listen((event) async {
       if (event != null) {
         _user = event;
@@ -527,8 +530,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
       // Store user details in Firestore if it's a new user
       if (userCredential.additionalUserInfo!.isNewUser) {
         UserModel newuser = UserModel(
-            uid: _user!.uid, email: _user!.email!, name: "", profileImageUrl: "");
-        await _firestore.collection('users').doc(_user!.uid).set(newuser.toMap());
+            uid: _user!.uid,
+            email: _user!.email!,
+            name: "",
+            profileImageUrl: "");
+        await _firestore
+            .collection('users')
+            .doc(_user!.uid)
+            .set(newuser.toMap());
 
         Navigator.of(context).push(
           MaterialPageRoute(
