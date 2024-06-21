@@ -63,7 +63,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   Future<void> sendNotification(String? fcmToken, String message) async {
     const String serverKey =
-        'ya29.a0AXooCgsjTQxpQ0ZOIFYh0HU38ol6BEIlH8fwZBnrPyL66sW3NP3SbuHST3UElHQHRRRWsp9Pdg2R0Se0gx0ejdYVRhXCb7twI-TDz83nNUIK0Jd8TxX0AjvVkkfFjcr8psRMvgzUWre4ZWaaJevDpExLVYxV89E6fh9YaCgYKATcSARASFQHGX2Mim1jAOYRpdqZ_mL88tzZlnQ0171'; // Replace with your actual server key
+        'ya29.a0AXooCgsfdjcWcT2TwIFQR5DGRZXQ0N6yUrK4vRsiL6Z2c-0MleZIxuOXmDy3LwFW5x9KvSvJ6FjrL_hzrbgMtnWm20y9VYdmj7DDKXRbZJINWjSJyQkiPkaBH4BDB5wxFHXWdAK6j4_ugWGhFHzXjq9c41CiWahme3ZaaCgYKAcESARASFQHGX2MirKZDz0cpt6veD9CrvwucFQ0171'; // Replace with your actual server key
     final response = await http.post(
       Uri.parse(
           'https://fcm.googleapis.com/v1/projects/chatapp-a5146/messages:send'),
@@ -73,9 +73,10 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
       },
       body: jsonEncode(<String, dynamic>{
         "message": {
-          "token": fcmToken,
+          "token": widget.targetUser.fcmToken,
           "notification": {
-            "title": "This is a Firebase Cloud Messaging device group message!"
+            "title": widget.userModel.name,
+            "body": message,
           }
         }
       }),
