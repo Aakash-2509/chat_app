@@ -134,15 +134,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 16),
-            // TextField(
-            //   controller: _phoneController,
-            //   keyboardType: TextInputType.number,
-            //   decoration: const InputDecoration(
-            //     labelText: "Phone Number",
-            //     border: OutlineInputBorder(),
-            //   ),
-            // ),
+          
+        
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _saveProfile,
