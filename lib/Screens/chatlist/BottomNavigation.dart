@@ -1,9 +1,17 @@
 import 'package:chat_app/Screens/chatlist/HomePage.dart';
 import 'package:chat_app/Screens/chatlist/profileScreen.dart';
+import 'package:chat_app/Screens/chatlist/searchPage.dart';
+import 'package:chat_app/model/chatlist.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavigation extends StatefulWidget {
-  const BottomNavigation({super.key});
+  final UserModel userModel;
+  final User firebaseUser;
+
+  //  final UserModel userModel;
+  // final User firebaseUser; 
+    const BottomNavigation({Key? key, required this.userModel, required this.firebaseUser}) : super(key: key);
 
   @override
   State<BottomNavigation> createState() => _BottomNavigationState();
@@ -11,11 +19,16 @@ class BottomNavigation extends StatefulWidget {
 
 class _BottomNavigationState extends State<BottomNavigation> {
   int _currentIndex = 0;
+    late final List<Widget> _children;
 
-  final List<Widget> _children = [
-    const HomeTab(),
-    const ProfileTab(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _children = [
+      HomePage(userModel: widget.userModel, firebaseUser: widget.firebaseUser),
+      const ProfileTab(),
+    ];
+  }
 
   void onTabTapped(int index) {
     setState(() {
@@ -44,6 +57,14 @@ class _BottomNavigationState extends State<BottomNavigation> {
             label: 'Profile',
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return SearchPage(userModel: widget.userModel, firebaseUser: widget.firebaseUser);
+          }));
+        },
+        child: Icon(Icons.search),
       ),
     );
   }

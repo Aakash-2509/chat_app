@@ -61,12 +61,15 @@ class UserModel {
 
 class ChatRoomModel {
   String ? chatroomid;
-  List<String>? participants;
-  ChatRoomModel({this.chatroomid, this.participants});
+  Map<String, dynamic>? participants;
+  String? lastMessage;
+
+  ChatRoomModel({this.chatroomid, this.participants,this.lastMessage});
 
 ChatRoomModel.fromMap(Map<String, dynamic> map) {
 chatroomid = map["chatroomid"];
 participants = map["participants"];
+lastMessage = map["lastMessage"];
 
 
 }
@@ -75,48 +78,42 @@ Map<String, dynamic> toMap() {
 
   return{
     "chatroomid" : chatroomid,
-    "participants": participants
+    "participants": participants,
+    "lastMessage": lastMessage
 
   };
 }
 
 }
-
 
 
 
 
 
 class MessageModel {
-  String ? sender;
-  String ? text;
-  bool ? seen;
-  DateTime ? createdon;
- 
-  MessageModel({this.sender, this.text, this.seen, this.createdon});
+  String? messageid;
+  String? sender;
+  String? text;
+  bool? seen;
+  DateTime? createdon;
 
-MessageModel.fromMap(Map<String, dynamic> map) {
-sender = map["sender"];
-text = map["text"];
-seen = map["seen"];
-createdon = map["createdon"];
+  MessageModel({this.messageid, this.sender, this.text, this.seen, this.createdon});
 
+  MessageModel.fromMap(Map<String, dynamic> map) {
+    messageid = map["messageid"];
+    sender = map["sender"];
+    text = map["text"];
+    seen = map["seen"];
+    createdon = map["createdon"].toDate();    
+  }
 
+  Map<String, dynamic> toMap() {
+    return {
+      "messageid": messageid,
+      "sender": sender,
+      "text": text,
+      "seen": seen,
+      "createdon": createdon
+    };
+  }
 }
-
-Map<String, dynamic> toMap() {
-
-  return{
-    "sender" : sender,
-    "text": text,
-        "seen": seen,
-            "createdon": createdon
-
-  };
-}
-
-}
-
-
-
-

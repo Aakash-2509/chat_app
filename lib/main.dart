@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:uuid/uuid.dart';
 
+var uuid = Uuid();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(); // Initialize Firebase
@@ -27,6 +29,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  
   const MyApp({super.key});
 
   // This widget is the root of your application.
@@ -40,7 +43,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       // home: const BottomNavigation(),
-      home: const SignUpScreen(),
+      home:  SignUpScreen(),
     );
   }
 }

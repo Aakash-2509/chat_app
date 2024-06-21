@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:chat_app/model/chatlist.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,7 +12,13 @@ import 'package:chat_app/Screens/chatlist/BottomNavigation.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
   final User user;
-  const ProfileSetupScreen({super.key, required this.user});
+  final UserModel userModel;
+  final User firebaseUser;
+  const ProfileSetupScreen(
+      {super.key,
+      required this.userModel,
+      required this.firebaseUser,
+      required this.user});
 
   @override
   State<ProfileSetupScreen> createState() => _ProfileSetupScreenState();
@@ -39,6 +46,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     Reference storageReference = _storage.ref().child(
         'profile_images/${widget.user.uid}/${DateTime.now().millisecondsSinceEpoch}');
     UploadTask uploadTask = storageReference.putFile(image);
+
     await uploadTask.whenComplete(() => null);
     return await storageReference.getDownloadURL();
   }
@@ -49,6 +57,13 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       if (_profileImage != null) {
         profileImageUrl = await _uploadImage(_profileImage!);
       }
+        String? fullname = _nameController.text.trim();
+    // String? mobileNo = _phoneController.text.trim();
+      // Update UserModel with new data
+    widget.userModel.name = fullname;
+    widget.userModel.profileImageUrl = profileImageUrl ?? '';
+    // widget.userModel. = fcmToken ?? '';
+    
 
       // Get current FCM token or generate a new one if none exists
       String? fcmToken = await FirebaseMessaging.instance.getToken();
@@ -58,11 +73,37 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         'profileImageUrl': profileImageUrl ?? '',
         'fcmToken': fcmToken,
       });
+      await _firestore.collection('users').doc(widget.userModel.uid).update({
+        'name': _nameController.text.trim(),
+        'phone': _phoneController.text.trim(),
+        'profileImageUrl': profileImageUrl ?? '',
+        'fcmToken': fcmToken,
+      });
+
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(widget.userModel.uid)
+          .set(widget.userModel!.toMap())
+          .then((value) {
+        print("data uploaded.........................");
+      });
 
       // Navigate to the home screen or another appropriate screen
+      // Navigator.of(context).pushReplacement(
+      //   MaterialPageRoute(builder: (context) => const BottomNavigation(
+      //     userModel: ,
+      //     firebaseUser: ,
+         
+      //   )),
+      // );
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const BottomNavigation()),
-      );
+  MaterialPageRoute(
+    builder: (context) => BottomNavigation(
+      userModel: widget.userModel,
+      firebaseUser: widget.firebaseUser,
+    ),
+  ),
+);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error: $e")),
