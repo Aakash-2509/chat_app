@@ -351,7 +351,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<ChatRoomModel?> getChatroomModel(UserModel targetUser) async {
+  Future<ChatRoomModel?>  getChatroomModel(UserModel targetUser) async {
     ChatRoomModel? chatRoom;
 
     QuerySnapshot snapshot = await FirebaseFirestore.instance

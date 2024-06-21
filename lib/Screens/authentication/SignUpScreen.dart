@@ -361,6 +361,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
             userModel: userModel,
             firebaseUser: _user!,
           );
+
+
+
         } else {
           return const Center(child: Text("User not found"));
         }
@@ -382,14 +385,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          // TextField(
-          //   controller: _passwordController,
-          //   obscureText: true,
-          //   decoration: const InputDecoration(
-          //     labelText: "Password",
-          //     border: OutlineInputBorder(),
-          //   ),
-          // ),
+          
 
           TextField(
             controller: _passwordController,
@@ -447,14 +443,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          // TextField(
-          //   controller: _passwordController,
-          //   obscureText: true,
-          //   decoration: const InputDecoration(
-          //     labelText: "Password",
-          //     border: OutlineInputBorder(),
-          //   ),
-          // ),
+          
 
           TextField(
             controller: _passwordController,

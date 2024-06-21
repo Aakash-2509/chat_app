@@ -35,7 +35,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   Future<void> _pickImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery,imageQuality: 20);
     setState(() {
       if (pickedFile != null) {
         _profileImage = File(pickedFile.path);
@@ -134,15 +134,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 16),
-            // TextField(
-            //   controller: _phoneController,
-            //   keyboardType: TextInputType.number,
-            //   decoration: const InputDecoration(
-            //     labelText: "Phone Number",
-            //     border: OutlineInputBorder(),
-            //   ),
-            // ),
+          
+        
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _saveProfile,
