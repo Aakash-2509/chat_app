@@ -8,7 +8,7 @@
 // import 'package:flutter/material.dart';
 
 // class HomeTab extends StatefulWidget {
-  
+
 //   const HomeTab({super.key});
 
 //   @override
@@ -119,11 +119,6 @@
 //   }
 // }
 
-
-
-
-
-
 // import 'package:chat_app/Screens/chatlist/chatRoomPage.dart';
 // import 'package:chat_app/Screens/chatlist/searchPage.dart';
 // import 'package:chat_app/model/FireBaseHelper.dart';
@@ -148,7 +143,7 @@
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
-    
+
 //       floatingActionButton: FloatingActionButton(
 //         onPressed: () {
 //           Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -238,43 +233,50 @@
 //           ),
 //         ),
 //       ),
-     
+
 //     );
 //   }
 // }
 
-
-
+import 'dart:developer';
 
 import 'package:chat_app/Screens/chatlist/chatRoomPage.dart';
 import 'package:chat_app/Screens/chatlist/searchPage.dart';
 import 'package:chat_app/main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 import '../../model/chatlist.dart';
-
 
 class HomePage extends StatefulWidget {
   final UserModel userModel;
   final User firebaseUser;
 
-  const HomePage({Key? key, required this.userModel, required this.firebaseUser}) : super(key: key);
+  const HomePage(
+      {Key? key, required this.userModel, required this.firebaseUser})
+      : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return SearchPage(userModel: widget.userModel, firebaseUser: widget.firebaseUser);
+            return SearchPage(
+                userModel: widget.userModel, firebaseUser: widget.firebaseUser);
           }));
         },
         child: Icon(Icons.search),
@@ -291,7 +293,9 @@ class _HomePageState extends State<HomePage> {
                   return ListView.builder(
                     itemCount: usersSnapshot.docs.length,
                     itemBuilder: (context, index) {
-                      UserModel user = UserModel.fromMap(usersSnapshot.docs[index].data() as Map<String, dynamic>);
+                      UserModel user = UserModel.fromMap(
+                          usersSnapshot.docs[index].data()
+                              as Map<String, dynamic>);
 
                       // Don't show the current user
                       if (user.uid == widget.userModel.uid) {
@@ -300,7 +304,8 @@ class _HomePageState extends State<HomePage> {
 
                       return ListTile(
                         onTap: () async {
-                          ChatRoomModel? chatRoomModel = await getChatroomModel(user);
+                          ChatRoomModel? chatRoomModel =
+                              await getChatroomModel(user);
 
                           if (chatRoomModel != null) {
                             Navigator.push(
@@ -317,7 +322,8 @@ class _HomePageState extends State<HomePage> {
                           }
                         },
                         leading: CircleAvatar(
-                          backgroundImage: NetworkImage(user.profileImageUrl.toString()),
+                          backgroundImage:
+                              NetworkImage(user.profileImageUrl.toString()),
                         ),
                         title: Text(user.name.toString()),
                         subtitle: Text(user.email.toString()),
@@ -357,7 +363,8 @@ class _HomePageState extends State<HomePage> {
     if (snapshot.docs.length > 0) {
       // Fetch the existing one
       var docData = snapshot.docs[0].data();
-      ChatRoomModel existingChatroom = ChatRoomModel.fromMap(docData as Map<String, dynamic>);
+      ChatRoomModel existingChatroom =
+          ChatRoomModel.fromMap(docData as Map<String, dynamic>);
 
       chatRoom = existingChatroom;
     } else {
@@ -371,7 +378,10 @@ class _HomePageState extends State<HomePage> {
         },
       );
 
-      await FirebaseFirestore.instance.collection("chatrooms").doc(newChatroom.chatroomid).set(newChatroom.toMap());
+      await FirebaseFirestore.instance
+          .collection("chatrooms")
+          .doc(newChatroom.chatroomid)
+          .set(newChatroom.toMap());
 
       chatRoom = newChatroom;
     }

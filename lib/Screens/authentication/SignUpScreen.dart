@@ -279,13 +279,11 @@
 //   }
 // }
 
-
-
-
 import 'dart:developer';
 
 import 'package:chat_app/model/chatlist.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -304,8 +302,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User? _user;
-  bool _isLogin = false; 
-    bool _passwordVisible = false; // to toggle password visibility// to toggle between sign-up and login forms
+  bool _isLogin = false;
+  bool _passwordVisible =
+      false; // to toggle password visibility// to toggle between sign-up and login forms
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -392,7 +391,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           //   ),
           // ),
 
-           TextField(
+          TextField(
             controller: _passwordController,
             obscureText: !_passwordVisible,
             decoration: InputDecoration(
@@ -457,7 +456,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           //   ),
           // ),
 
-           TextField(
+          TextField(
             controller: _passwordController,
             obscureText: !_passwordVisible,
             decoration: InputDecoration(
@@ -514,6 +513,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       // Store basic user details in Firestore
       await _firestore.collection('users').doc(uid).set(newuser.toMap());
+
+      FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+      final token = await messaging.getToken();
+      
+      log(" token in method is $token");
+      if (token != null) {
+        // Save the token to the user's document in Firestore
+        try {
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc(newuser.uid)
+              .update({'fcmToken': token});
+        } on Exception catch (e, StrackTrace) {
+          log("Error in saving token $e,$StrackTrace");
+          // TODO
+        }
+      }
 
       // Navigate to the profile setup screen
       Navigator.of(context).pushReplacement(

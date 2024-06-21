@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:chat_app/model/chatlist.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -57,22 +58,22 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       if (_profileImage != null) {
         profileImageUrl = await _uploadImage(_profileImage!);
       }
-        String? fullname = _nameController.text.trim();
-    // String? mobileNo = _phoneController.text.trim();
+      String? fullname = _nameController.text.trim();
+      // String? mobileNo = _phoneController.text.trim();
       // Update UserModel with new data
-    widget.userModel.name = fullname;
-    widget.userModel.profileImageUrl = profileImageUrl ?? '';
-    // widget.userModel. = fcmToken ?? '';
-    
+      widget.userModel.name = fullname;
+      widget.userModel.profileImageUrl = profileImageUrl ?? '';
+      // widget.userModel. = fcmToken ?? '';
 
       // Get current FCM token or generate a new one if none exists
-      String? fcmToken = await FirebaseMessaging.instance.getToken();
-      await _firestore.collection('users').doc(widget.user.uid).update({
-        'name': _nameController.text.trim(),
-        // 'phone': _phoneController.text.trim(),
-        'profileImageUrl': profileImageUrl ?? '',
-        'fcmToken': fcmToken,
-      });
+      String fcmToken = await GetStorage().read('fcm');
+      log("vbhbhgbhbhjhbnjn $fcmToken");
+      // await _firestore.collection('users').doc(widget.user.uid).update({
+      //   'name': _nameController.text.trim(),
+      //   // 'phone': _phoneController.text.trim(),
+      //   'profileImageUrl': profileImageUrl ?? '',
+      //   'fcmToken': fcmToken,
+      // });
       await _firestore.collection('users').doc(widget.userModel.uid).update({
         'name': _nameController.text.trim(),
         // 'phone': _phoneController.text.trim(),
@@ -80,23 +81,22 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         'fcmToken': fcmToken,
       });
 
-      await FirebaseFirestore.instance
-          .collection("users")
-          .doc(widget.userModel.uid)
-          .set(widget.userModel!.toMap())
-          .then((value) {
-        print("data uploaded.........................");
-      });
+      // await FirebaseFirestore.instance
+      //     .collection("users")
+      //     .doc(widget.userModel.uid)
+      //     .set(widget.userModel!.toMap())
+      //     .then((value) {
+      //   print("data uploaded.........................");
+      // });
 
-   
       Navigator.of(context).pushReplacement(
-  MaterialPageRoute(
-    builder: (context) => BottomNavigation(
-      userModel: widget.userModel,
-      firebaseUser: widget.firebaseUser,
-    ),
-  ),
-);
+        MaterialPageRoute(
+          builder: (context) => BottomNavigation(
+            userModel: widget.userModel,
+            firebaseUser: widget.firebaseUser,
+          ),
+        ),
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error: $e")),

@@ -63,29 +63,30 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   Future<void> sendNotification(String? fcmToken, String message) async {
     const String serverKey =
-        '646d352b8675545cc9bc5d9253f9c3d7f2debcd7'; // Replace with your actual server key
+        'ya29.a0AXooCgsjTQxpQ0ZOIFYh0HU38ol6BEIlH8fwZBnrPyL66sW3NP3SbuHST3UElHQHRRRWsp9Pdg2R0Se0gx0ejdYVRhXCb7twI-TDz83nNUIK0Jd8TxX0AjvVkkfFjcr8psRMvgzUWre4ZWaaJevDpExLVYxV89E6fh9YaCgYKATcSARASFQHGX2Mim1jAOYRpdqZ_mL88tzZlnQ0171'; // Replace with your actual server key
     final response = await http.post(
-      Uri.parse('https://fcm.googleapis.com/fcm/send'),
+      Uri.parse(
+          'https://fcm.googleapis.com/v1/projects/chatapp-a5146/messages:send'),
       headers: <String, String>{
         'Content-Type': 'application/json',
-        'Authorization': 'key=$serverKey',
+        'Authorization': "Bearer $serverKey",
       },
-      body: jsonEncode(
-        <String, dynamic>{
-          'notification': <String, dynamic>{
-            'body': message,
-            'title': 'New Message'
-          },
-          'priority': 'high',
-          'to': fcmToken,
-        },
-      ),
+      body: jsonEncode(<String, dynamic>{
+        "message": {
+          "token": fcmToken,
+          "notification": {
+            "title": "This is a Firebase Cloud Messaging device group message!"
+          }
+        }
+      }),
     );
 
-    if (response.statusCode == 200) {
-      log('Notification Sent!');
-    } else {
-      log('Notification Failed with status: ${response.statusCode}');
+    try {
+      if (response.statusCode == 200) {
+        log('Notification Sent!');
+      }
+    } catch (e, stackTrace) {
+      log("message not sent , $e,$stackTrace");
     }
   }
 
