@@ -554,7 +554,7 @@ class _ProfileTabState extends State<ProfileTab> {
 
   Future<void> _pickAndUploadImage() async {
     try {
-      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+      final pickedFile = await _picker.pickImage(source: ImageSource.gallery,imageQuality: 20);
       if (pickedFile != null) {
         File imageFile = File(pickedFile.path);
         String downloadUrl = await _uploadImage(imageFile);

@@ -34,7 +34,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   Future<void> _pickImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery,imageQuality: 20);
     setState(() {
       if (pickedFile != null) {
         _profileImage = File(pickedFile.path);
