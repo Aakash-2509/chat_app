@@ -35,17 +35,20 @@ class UserModel {
      this.name,
      this.email,
      this.profileImageUrl,
+     this.fcmToken,
   });
     String? uid;
     String? name;
     String? email;
     String? profileImageUrl;
+    String? fcmToken;
 
   UserModel.fromMap(Map<String, dynamic> map){
     uid = map['uid']?? "";
     name = map['name'] ?? "";
     email = map['email'] ?? "";
     profileImageUrl = map['profileImageUrl'] ?? "";
+    fcmToken = map['fcmToken'] ?? "";
   }
 
   Map<String, dynamic> toMap() {
@@ -55,6 +58,7 @@ class UserModel {
     'name': name,
     'email': email,
     'profileImageUrl': profileImageUrl,
+    'fcmToken': fcmToken,
 };
   }
 }
