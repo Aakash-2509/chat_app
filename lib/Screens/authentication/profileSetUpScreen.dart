@@ -26,7 +26,7 @@ class ProfileSetupScreen extends StatefulWidget {
 
 class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
+  // final TextEditingController _phoneController = TextEditingController();
   File? _profileImage;
   final ImagePicker _picker = ImagePicker();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -69,13 +69,13 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       String? fcmToken = await FirebaseMessaging.instance.getToken();
       await _firestore.collection('users').doc(widget.user.uid).update({
         'name': _nameController.text.trim(),
-        'phone': _phoneController.text.trim(),
+        // 'phone': _phoneController.text.trim(),
         'profileImageUrl': profileImageUrl ?? '',
         'fcmToken': fcmToken,
       });
       await _firestore.collection('users').doc(widget.userModel.uid).update({
         'name': _nameController.text.trim(),
-        'phone': _phoneController.text.trim(),
+        // 'phone': _phoneController.text.trim(),
         'profileImageUrl': profileImageUrl ?? '',
         'fcmToken': fcmToken,
       });
@@ -88,14 +88,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         print("data uploaded.........................");
       });
 
-      // Navigate to the home screen or another appropriate screen
-      // Navigator.of(context).pushReplacement(
-      //   MaterialPageRoute(builder: (context) => const BottomNavigation(
-      //     userModel: ,
-      //     firebaseUser: ,
-         
-      //   )),
-      // );
+   
       Navigator.of(context).pushReplacement(
   MaterialPageRoute(
     builder: (context) => BottomNavigation(
@@ -142,14 +135,14 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            TextField(
-              controller: _phoneController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: "Phone Number",
-                border: OutlineInputBorder(),
-              ),
-            ),
+            // TextField(
+            //   controller: _phoneController,
+            //   keyboardType: TextInputType.number,
+            //   decoration: const InputDecoration(
+            //     labelText: "Phone Number",
+            //     border: OutlineInputBorder(),
+            //   ),
+            // ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _saveProfile,

@@ -279,6 +279,9 @@
 //   }
 // }
 
+
+
+
 import 'dart:developer';
 
 import 'package:chat_app/model/chatlist.dart';
@@ -301,7 +304,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User? _user;
-  bool _isLogin = false; // to toggle between sign-up and login forms
+  bool _isLogin = false; 
+    bool _passwordVisible = false; // to toggle password visibility// to toggle between sign-up and login forms
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -379,12 +383,31 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          TextField(
+          // TextField(
+          //   controller: _passwordController,
+          //   obscureText: true,
+          //   decoration: const InputDecoration(
+          //     labelText: "Password",
+          //     border: OutlineInputBorder(),
+          //   ),
+          // ),
+
+           TextField(
             controller: _passwordController,
-            obscureText: true,
-            decoration: const InputDecoration(
+            obscureText: !_passwordVisible,
+            decoration: InputDecoration(
               labelText: "Password",
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _passwordVisible = !_passwordVisible;
+                  });
+                },
+              ),
             ),
           ),
           const SizedBox(height: 16),
@@ -425,12 +448,31 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          TextField(
+          // TextField(
+          //   controller: _passwordController,
+          //   obscureText: true,
+          //   decoration: const InputDecoration(
+          //     labelText: "Password",
+          //     border: OutlineInputBorder(),
+          //   ),
+          // ),
+
+           TextField(
             controller: _passwordController,
-            obscureText: true,
-            decoration: const InputDecoration(
+            obscureText: !_passwordVisible,
+            decoration: InputDecoration(
               labelText: "Password",
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _passwordVisible = !_passwordVisible;
+                  });
+                },
+              ),
             ),
           ),
           const SizedBox(height: 16),

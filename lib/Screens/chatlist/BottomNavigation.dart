@@ -26,7 +26,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
     super.initState();
     _children = [
       HomePage(userModel: widget.userModel, firebaseUser: widget.firebaseUser),
-      const ProfileTab(),
+       ProfileTab(userModel: widget.userModel, firebaseUser: widget.firebaseUser),
     ];
   }
 
@@ -58,14 +58,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return SearchPage(userModel: widget.userModel, firebaseUser: widget.firebaseUser);
-          }));
-        },
-        child: Icon(Icons.search),
-      ),
+      
     );
   }
 }
